@@ -75,6 +75,7 @@ setInterval(function(){
 	
 	childrenTest+=1;
 	buttonTest+=2;
+	app+=1;
 	myobj1={
 	tag:'div',
 	attributes:{
@@ -153,5 +154,10 @@ var updatedom;
 setInterval(function(){
 	updateapp=new vElement(myobj1);
 	updatedom=updateapp.mountVElement();
-	mydom=diff(mydom,updatedom);
+	var patch=diff(mydom,updatedom);
+	console.log(patch);
+	console.log(mydom.vElement,"before patch");
+	mydom=patch(mydom.vElement);
+	console.log(mydom.vElement,"after patch");
+
 },1000);
