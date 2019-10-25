@@ -1,6 +1,4 @@
-const lowercase=input=>{
 
-}
 const diffAttributes=(vnodeAttrs,domnodeAttrs)=>{
   const patches=[];
   for (const [k,v] of Object.entries(vnodeAttrs)){
@@ -13,13 +11,13 @@ const diffAttributes=(vnodeAttrs,domnodeAttrs)=>{
       $node.removeAttribute(k);
     });
   }
-  return($node=>{
+  return(realNode=>{
     for(const patch of patches){
       
-      patch($node);
+      patch(realNode);
       
     }
-    return $node;
+    return realNode;
   })
 
 }
@@ -28,16 +26,16 @@ const diffChildren=(vnodeChildren,domNodeChildren,dom)=>{
 
 
   if(vnodeChildren.length!=domNodeChildren.length){
-    patches.push($node=>{
-      $node.appendChild(renderNode(vnodeChildren[domNodeChildren.length]))
-      return $node;
+    patches.push(realNode=>{
+      realNode.appendChild(renderNode(vnodeChildren[domNodeChildren.length]))
+      return realNode;
     })
   }
 
 
-  return $node=>{
+  return realNode=>{
   for (var patch of patches){
-    patch($node);
+    patch(realNode);
   }
   }
     
@@ -52,38 +50,31 @@ const renderNode = vnode => {
     el = document.createElement(nodeName)
 
     for (let key in attributes) {
-        if(typeof attributes[key]=='function' && key.startsWith('on')){
-          console.log(attributes[key],"my attrs");
-          el.__gooactHandlers = el.__gooactHandlers || {};
-          console.log(el.__gooactHandlers['click'],"this is go act handlers");
-          el.removeEventListener('click',el.__gooactHandlers['click']);
-          el.__gooactHandlers ['click']=attributes[key];
-          console.log(el.__gooactHandlers );
-          el.addEventListener('click',el.__gooactHandlers ['click']);
+        if(key=='onclick'){
+          el.eventHandler = el.eventHandler || {};
+          el.removeEventListener('click',el.eventHandler['click']);
+          el.eventHandler ['click']=attributes[key];
+          el.addEventListener('click',el.eventHandler ['click']);
         }
         else{
       el.setAttribute(key, attributes[key])
         }
     }
-  } else if (typeof nodeName === 'function') { // here is our `People`
-    // initiate our component
+  } else if (typeof nodeName === 'function') {
     const component = new nodeName(attributes);
     el = renderNode(
-      component.render(component.props, component.state)
+      component.render()
     )
-    // save DOM reference to `base` field as in `renderComponent`
     component.base = el
   }
-  // recursively do this to all of its children
-  (children || []).forEach(child => el.appendChild(renderNode(child)))
+  (children||[]).forEach(child => el.appendChild(renderNode(child)))
 
   return el
 }
 
 export const renderComponent = (component, parent) => {
   console.log(component,"component");
-  let rendered = component.render(component.props, component.state)
-  console.log(component.props,component.state);
+  let rendered = component.render();
   component.base = diff(component.base, rendered)
 }
 
@@ -107,7 +98,7 @@ export const diff = (dom, vnode, parent) => {
     //if the passed node is a class then 
     if (typeof vnode.nodeName === 'function') {
       const component = new vnode.nodeName(vnode.attributes)
-      const rendered = component.render(component.props, component.state);
+      const rendered = component.render();
       var xyz=diff(dom, rendered);
       return dom;
 /*      return $node=>{
@@ -128,20 +119,16 @@ export const diff = (dom, vnode, parent) => {
 
     var patch=diffAttributes(vnode.attributes,dom.attributes);
     patch(dom);
-    var patchChild=diffChildren(vnode.children,dom.childNodes,dom);
-    patchChild(dom);
+/*    var patchChild=diffChildren(vnode.children,dom.childNodes,dom);
+    patchChild(dom);*/
     // run diffing for children
     dom.childNodes.forEach((child, i) => diff(child, vnode.children[i]))
 
     return dom;
-    /*return dom;*/
   } else {
-    return $node=>{
-      $node.replaceWith(renderNode(vnode));
-      return $node;
+    return realNode=>{
+      realNode.replaceWith(renderNode(vnode));
+      return realNode;
     }
-/*    const newDom = renderNode(vnode)
-    parent.appendChild(newDom)
-    return newDom*/
   }
 }

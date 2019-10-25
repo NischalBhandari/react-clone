@@ -1,8 +1,7 @@
 import { renderComponent } from './v-dom.js';
 
 export default class Component {
-  constructor(props) {
-    this.props = props
+  constructor() {
     this.state = {}
   }
 
