@@ -9,6 +9,7 @@ const zip = (xs, ys) => {
 };
 
 const diffAttrs = (oldAttrs, newAttrs) => {
+  console.log("diffing attributes");
   const patches = [];
 
   // setting newAttrs
@@ -75,7 +76,9 @@ const diff=(oldVTree,newVTree)=>{
 		}
 	}
 	if(typeof oldVTree==='string'||typeof newVTree==='string'){
-		if(oldVTree!==newVTree){
+	console.log('string different');
+    if(oldVTree!==newVTree){
+
 			return $node=>{
 				const $newNode=render(newVTree);
 				$node.replaceWith($newNode);
@@ -87,6 +90,8 @@ const diff=(oldVTree,newVTree)=>{
 		}
 	}
 	if(oldVTree.tagName!=newVTree.tagName){
+    console.log('tagname different');
+    console.log(newVTree);
 		return $node=>{
 			const $newNode=render(newVTree);
 			$node.replaceWith($newNode);

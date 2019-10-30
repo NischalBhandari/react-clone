@@ -2,3 +2,18 @@
 	background-color:red;
 	font-size:20px;
 }
+.square,.X,.O,.null{
+	height:200px;
+	width:200px;
+	
+}
+.X{
+	background-image:url('../images/cross.png');
+	background-size:cover;
+	background-repeat: no-repeat;
+}
+.O{
+	background-image:url('../images/ball.png');
+	background-size:cover;
+	background-repeat: no-repeat;
+}

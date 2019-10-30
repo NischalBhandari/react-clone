@@ -42,39 +42,58 @@ const diffChildren=(vnodeChildren,domNodeChildren,dom)=>{
 }
 const renderNode = vnode => {
   let el;
+  console.log(vnode,"this is node");
+  if (Array.isArray(vnode)){
+    vnode=vnode[0];
+/*    vnode.forEach((node,index)=>{
+      console.log(node[index],"this is the node");
+    });
+*/  }
+  else{
+  }
   const { nodeName, attributes, children } = vnode
-    console.log(vnode);
-  if (vnode.split) return document.createTextNode(vnode)
+  if (vnode.split|| typeof vnode==="number"){ 
+
+    return document.createTextNode(vnode);
+  }
 
   if (typeof nodeName === 'string') {
     el = document.createElement(nodeName)
-
+    //listen to dom attributes 
+    console.log(attributes,"this is the attributes");
     for (let key in attributes) {
-        if(key=='onclick'){
-          el.eventHandler = el.eventHandler || {};
-          el.removeEventListener('click',el.eventHandler['click']);
-          el.eventHandler ['click']=attributes[key];
-          el.addEventListener('click',el.eventHandler ['click']);
-        }
+        if(key=='onClick'||key=='onChange'||key=='onInput'){
+          let eventValue=key.slice(2);
+            //event value is added to parse the onClick/onChange to lower case and removing "on".
+            //event value is a type of event
+        el.eventHandler=el.eventHandler || {};
+       el.eventValue = eventValue.toLowerCase();
+       el.removeEventListener(el.eventValue,el.eventHandler [el.eventValue]);
+       el.eventHandler[el.eventValue]=attributes[key];
+       el.addEventListener(el.eventValue,el.eventHandler[el.eventValue]);
+      }
         else{
       el.setAttribute(key, attributes[key])
         }
     }
   } else if (typeof nodeName === 'function') {
     const component = new nodeName(attributes);
+    //calling component did mount here cause it will be the first time component is rendered.
+    component.componentDidMount();
     el = renderNode(
       component.render()
     )
     component.base = el
   }
-  (children||[]).forEach(child => el.appendChild(renderNode(child)))
+
+  (children||[]).forEach(child =>{ el.appendChild(renderNode(child));});
 
   return el
 }
 
 export const renderComponent = (component, parent) => {
-  console.log(component,"component");
   let rendered = component.render();
+  console.log(component.base,rendered,"rendering component");
   component.base = diff(component.base, rendered)
 }
 
@@ -87,11 +106,16 @@ export const diff = (dom, vnode, parent) => {
     }
 
 
-    if (typeof vnode === 'string'||typeof dom==='string') {
-      if(vnode!==dom){
-        console.log("vnode is not equal to dom");
+    if (typeof vnode === 'string'||typeof dom.nodeValue==='string') {
+      if(vnode===dom.nodeValue){
+        console.log("just return");
+      return dom;
+    }
+    else{
+        console.log(typeof dom.nodeValue, typeof vnode,"string nodevalue");
         dom.nodeValue = vnode;
-      return dom
+        console.log(dom.nodeValue);
+      return dom;
     }
 
     } 
@@ -109,7 +133,7 @@ export const diff = (dom, vnode, parent) => {
 
 
     //to check if tagname are the same or different if they are different then change whole node and children
-    console.log(dom,"for lower case");
+    console.log(typeof dom,"this is tagName");
     var lowerTagName=dom.tagName.toLowerCase();
     if(vnode.nodeName!==lowerTagName){
       const component = renderNode(vnode);
@@ -119,8 +143,8 @@ export const diff = (dom, vnode, parent) => {
 
     var patch=diffAttributes(vnode.attributes,dom.attributes);
     patch(dom);
-/*    var patchChild=diffChildren(vnode.children,dom.childNodes,dom);
-    patchChild(dom);*/
+    var patchChild=diffChildren(vnode.children,dom.childNodes,dom);
+    patchChild(dom);
     // run diffing for children
     dom.childNodes.forEach((child, i) => diff(child, vnode.children[i]))
 
