@@ -7,7 +7,7 @@ export default class Component {
     this.first=true; 
   }
   setState(state) {
-     console.log("state changed");
+     console.log(state,this.state,"state changed");
     if(this.first){
       renderComponent(this);
       this.first=false;
@@ -23,6 +23,7 @@ export default class Component {
       else{
       }
     }
+    console.log(state,this.state,"state changed");
     this.componentWillUpdate();
     renderComponent(this);
   this.componentDidUpdate();
@@ -35,7 +36,7 @@ export default class Component {
   	console.log("component will mount");
   }
   componentDidMount(){
-  	console.log("hello mounted the component");
+  	undefined;
   }
   componentWillUnmount(){
   	console.log("component unmounted");
@@ -49,11 +50,19 @@ export default class Component {
   		}
   	}  	
   	return false;  	 
+/*    if(this.state!=newState){
+      return true;
+    }
+    else{
+      return false;
+    }*/
   	}
   componentWillUpdate(){
     console.log('component will update now ');
   }
   componentDidUpdate(){
     console.log('component has updated');
+  }
+  getNewProps(){
   }
 }

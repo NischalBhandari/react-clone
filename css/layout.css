@@ -17,3 +17,11 @@
 	background-size:cover;
 	background-repeat: no-repeat;
 }
+.game-board{
+	width:50%;
+	float:left;
+}
+.game-info{
+	width:50%;
+	float:right;
+}

@@ -24,7 +24,6 @@ const diffAttributes=(vnodeAttrs,domnodeAttrs)=>{
 const diffChildren=(vnodeChildren,domNodeChildren,dom)=>{
   const patches=[];
 
-
   if(vnodeChildren.length!=domNodeChildren.length){
     patches.push(realNode=>{
       realNode.appendChild(renderNode(vnodeChildren[domNodeChildren.length]))
@@ -42,13 +41,13 @@ const diffChildren=(vnodeChildren,domNodeChildren,dom)=>{
 }
 const renderNode = vnode => {
   let el;
-  console.log(vnode,"this is node");
   if (Array.isArray(vnode)){
     vnode=vnode[0];
 /*    vnode.forEach((node,index)=>{
-      console.log(node[index],"this is the node");
-    });
-*/  }
+      console.log(node,"this is the node");
+       return renderNode(node);
+    });*/
+  }
   else{
   }
   const { nodeName, attributes, children } = vnode
@@ -60,7 +59,6 @@ const renderNode = vnode => {
   if (typeof nodeName === 'string') {
     el = document.createElement(nodeName)
     //listen to dom attributes 
-    console.log(attributes,"this is the attributes");
     for (let key in attributes) {
         if(key=='onClick'||key=='onChange'||key=='onInput'){
           let eventValue=key.slice(2);
@@ -86,14 +84,14 @@ const renderNode = vnode => {
     component.base = el
   }
 
-  (children||[]).forEach(child =>{ el.appendChild(renderNode(child));});
+  (children||[]).forEach(child =>{ 
+    el.appendChild(renderNode(child));});
 
   return el
 }
 
 export const renderComponent = (component, parent) => {
   let rendered = component.render();
-  console.log(component.base,rendered,"rendering component");
   component.base = diff(component.base, rendered)
 }
 
@@ -108,13 +106,10 @@ export const diff = (dom, vnode, parent) => {
 
     if (typeof vnode === 'string'||typeof dom.nodeValue==='string') {
       if(vnode===dom.nodeValue){
-        console.log("just return");
       return dom;
     }
     else{
-        console.log(typeof dom.nodeValue, typeof vnode,"string nodevalue");
         dom.nodeValue = vnode;
-        console.log(dom.nodeValue);
       return dom;
     }
 
@@ -133,7 +128,6 @@ export const diff = (dom, vnode, parent) => {
 
 
     //to check if tagname are the same or different if they are different then change whole node and children
-    console.log(typeof dom,"this is tagName");
     var lowerTagName=dom.tagName.toLowerCase();
     if(vnode.nodeName!==lowerTagName){
       const component = renderNode(vnode);

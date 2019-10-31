@@ -21,9 +21,10 @@ class Game extends Component{
         xIsNext:true,
          player1:'X',
          player2:'O',
+         list:0,
       }
     }
-    jumpTo(step,that){
+/*    jumpTo(step,that){
       const history=this.state.history.slice();
       history.pop();
       if(this.state.stepNumber-1>0){
@@ -33,14 +34,25 @@ class Game extends Component{
         xIsNext:!this.state.xIsNext,
       });
     }
+    }*/
+    jumpTo(step,that){
+      const history=this.state.history;
+      console.log(history,this.state.stepNumber,"history in step");
+      this.setState({
+        history:history,
+        stepNumber:step,
+        xIsNext:(step%2)===0
+      });
+      console.log("this is step 2",this.state.stepNumber)
     }
+
       changePlayer(e){
     this.setState({
       player1:e.target.value,
     })
   }
     handleClick(i){
-          const history = this.state.history;
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);;
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     if (calculateWinner(squares) || squares[i]) {
@@ -51,25 +63,31 @@ class Game extends Component{
       history: history.concat([{
         squares: squares,
       }]),
-      stepNumber:this.state.stepNumber+1,
+      stepNumber:history.length,
       xIsNext: !this.state.xIsNext,
     });
     }
     componentDidMount(){
-      console.log("this is the first mount");
+/*      var that=this;
+      setInterval(function(){
+        that.setState({
+          list:that.state.list+1
+        })
+      },1000);*/
     }
     render(){
+      console.log(" history in step called render");
+      console.log(this.state.history,this.state.stepNumber," history in step called render");
       const history = this.state.history.slice();
 
       const current=history[this.state.stepNumber];
 
       const winner=calculateWinner(current.squares);
       const moves = history.map((step,move)=>{
-
         const desc=move ? 'Go to move #' + move : 'Go to game start';
 
         return (
-          h('li' , {}, h('button',{onClick:this.jumpTo.bind(this,move)},"Go back"))
+          h('li' , {}, h('button',{onClick:this.jumpTo.bind(this,move)},desc))
 
           )
       })
@@ -81,8 +99,8 @@ class Game extends Component{
         status='Next player: '+ (this.state.xIsNext? this.state.player1:this.state.player2);
       }
       return(
-        h('div',{class:"game"},h('div',{class:'game-board'},h(Board,{squares:current.squares,onPass:this.handleClick.bind(this)})),h('div',{class:'game-info'},h('div',{},status),h('ol',{},moves)),        h('input',{onInput:this.changePlayer.bind(this)},"none"),
-        h('input',{value:`${this.state.test}`},),)
+        h('div',{class:"game"},h('div',{class:'game-board'},h(Board,{squares:current.squares,onPass:this.handleClick.bind(this)})),h('div',{class:'game-info'},h('div',{},status),h('ol',{},...moves)),        h('input',{onInput:this.changePlayer.bind(this)},"none"),
+        h('input',{value:`${this.state.test}`},),h('div',{},this.state.list))
       );
   }
 }
@@ -92,11 +110,10 @@ class Board extends Component{
   constructor(props){
     super(props);
     this.state={
-     
+     list:1
     }
   }
   componentDidMount(){
-    console.log("Board component Mounted");
   }
   renderSquare(i){
 
@@ -147,7 +164,6 @@ class Square extends Component{
     console.log("square component will update");
   }
   render(){
-    console.log(this.props,"this is the props");
     return h('button',{class:`${this.props.value}`,onClick:this.props.onTest.bind(this)}
       );
   }
