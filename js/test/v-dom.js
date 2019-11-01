@@ -43,10 +43,6 @@ const renderNode = vnode => {
   let el;
   if (Array.isArray(vnode)){
     vnode=vnode[0];
-/*    vnode.forEach((node,index)=>{
-      console.log(node,"this is the node");
-       return renderNode(node);
-    });*/
   }
   else{
   }
@@ -77,10 +73,11 @@ const renderNode = vnode => {
   } else if (typeof nodeName === 'function') {
     const component = new nodeName(attributes);
     //calling component did mount here cause it will be the first time component is rendered.
-    component.componentDidMount();
+    component.componentWillMount();
     el = renderNode(
       component.render()
     )
+    component.componentDidMount();
     component.base = el
   }
 

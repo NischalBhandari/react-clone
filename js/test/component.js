@@ -7,13 +7,14 @@ export default class Component {
     this.first=true; 
   }
   setState(state) {
-     console.log(state,this.state,"state changed");
+/*    console.log("called this setState")
     if(this.first){
       renderComponent(this);
       this.first=false;
-    }
+    }*/
 
-    var shouldUpdate=this.shouldComponentUpdate(state,this.props);
+    var shouldUpdate=this.shouldComponentUpdate(state);
+    console.log("should component update called ", shouldUpdate);
     if(shouldUpdate){
 /*    this.state=Object.assign({},state);*/
     for(const [k,v] of Object.entries(state)){
@@ -23,7 +24,6 @@ export default class Component {
       else{
       }
     }
-    console.log(state,this.state,"state changed");
     this.componentWillUpdate();
     renderComponent(this);
   this.componentDidUpdate();
@@ -33,7 +33,7 @@ export default class Component {
     console.log("static render");
   }
   componentWillMount(){
-  	console.log("component will mount");
+  	undefined;
   }
   componentDidMount(){
   	undefined;
@@ -41,14 +41,13 @@ export default class Component {
   componentWillUnmount(){
   	console.log("component unmounted");
   }
-  shouldComponentUpdate(newState,newProps){
-  	console.log(this.props,newProps,"this is the prevState and new state");
-    	for (const [k,v] of Object.entries(this.state)){
-  		if(v!=newState[k]){
-  			console.log("states are different so update ",v,newState[k]);
-  			return true;
+  shouldComponentUpdate(newState){
+    	for (const [k,v] of Object.entries(newState)){
+  		if(this.state[k]!=newState[k]){
+  		  return true;	
   		}
-  	}  	
+
+  	}
   	return false;  	 
 /*    if(this.state!=newState){
       return true;
@@ -58,10 +57,10 @@ export default class Component {
     }*/
   	}
   componentWillUpdate(){
-    console.log('component will update now ');
+    undefined;
   }
   componentDidUpdate(){
-    console.log('component has updated');
+    undefined;
   }
   getNewProps(){
   }

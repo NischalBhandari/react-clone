@@ -4,25 +4,24 @@ const types={
 		value:'value',
 		props:'props',
 	}
-const parseElement=(str)=>{
+export const parseElement=(str)=>{
 		let match;
 		let length;
 		let closed=false;
 		let closing;
 	const node={
-		type:null,
 		attributes:{},
 		children:[],
-		length:0,
-		tagName:'',
+		nodeName:'',
 	}
+	console.log(str);
 	match = str.match(/<(\w+)/);
 	if(!match){
 		str=str.split('<')[0];
 		return parseValue(str)
 	}
-	node.tagName=match[1];
-	closing="</"+node.tagName+">";
+	node.nodeName=match[1];
+	closing="</"+node.nodeName+">";
 	console.log("closing",closing);
 
 	
@@ -49,17 +48,33 @@ const parseElement=(str)=>{
 }
 const parseProps=(str)=>{
 	let match;
-	let length;
-	let key;
-	let value;
-	const node={
-
+	let splitter;
+	let temp;
+	let tempKey;
+	let tempValue;
+	let keys=[];
+	let value=[];
+	var node=Object(null);
+	splitter=str.split(",");
+	console.log(splitter,"parsed length");
+	if(splitter[0]){
+			for(var i=0;i<splitter.length;i++)
+		{	
+			temp=splitter[i].split('=');
+			keys.push(temp[0]);
+			value.push(temp[1]);
+		}
+		keys.forEach((key,index)=>{
+			/*key=key.replace(/["']/g,"");*/
+			console.log(key,"this is the key");
+			node[key]=value[index];
+		})
+		console.log(node,"node this")
+		return node;
 	}
-	str='{'+str+'}';
-	console.log(str,"this is the string");
-
-	
-	return str;
+	else{
+		return {};
+	}
 }
 const parseChildren=(str)=>{
 let match;
@@ -154,7 +169,6 @@ return parseValue(str);
 		return str;
 	}
 
-var myString='<nischal onClick:{this.test} onChnage:{this.good}><Testing onClick:dothis><Good>test</Good><jello>nice</jello></Testing><Resting>Rest</Resting><nesting>Happy</nesting></nischal>';
+var myString='<nischal onClick={this.test},onChnage={this.good}><Testing onClick=hellohi><Good>test</Good><jello>nice</jello></Testing><Resting>Rest</Resting><nesting>Happy</nesting></nischal>';
 var parsed=parseElement(myString);
-
 console.log(parsed);
